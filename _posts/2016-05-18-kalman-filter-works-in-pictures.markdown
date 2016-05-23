@@ -1,9 +1,14 @@
 ---
 layout: post
-title:  "图示卡尔曼滤波器原理"
+title:  "图示卡尔曼滤波器原理(译文)"
 date:   2016-05-18 22:38:16 +0200
 categories: jekyll update
 ---
+
+>
+> 最近需要用到卡尔曼滤波器，看了一些文章，发现这篇[ How a Kalman filter works, in pictures](http://www.bzarg.com/p/how-a-kalman-filter-works-in-pictures)最为深入浅出，通俗易懂，翻译出来供朋友们参考。
+> 若你发现有任何不当之处请Email至：[cia120@163.com](mailto:cia120@163.com)
+>
 
 我将在本文介绍[卡尔曼滤波器](https://zh.wikipedia.org/wiki/卡尔曼滤波)，因为它在工程中有着广泛应用. 
 
@@ -18,8 +23,7 @@ categories: jekyll update
 Google一下卡尔曼滤波器，搜索到的大部分文章用到的数学知识都看起来晦涩难懂，让人望而却步. 事实上如果你从正确的角度看待它，就会发现卡尔曼滤波器其实超级简单易懂,这使它成为一个很好的文章主题.我将以许多清晰、漂亮的图片以及各色符号来阐述之. 理解本文你仅需的前置知识是懂一些概率论和矩阵. 
 
 
-**TODO**
-我们先从一个不太严谨的例子开始. 但如果你想直奔主题到漂亮的图片和数学公式，请<span style="color: #3366ff;">**current state**</span> (at time <span style="color: #3366ff;">**k-1**</span>) and **predict the <span style="color: #ff00ff;">next state</span>** at time <span style="color: #ff00ff;">**k**</span>跳到这里. 
+我们先从一个不太严谨的例子开始. 但如果你想直奔主题到漂亮的图片和数学公式，请[跳到这里继续阅读](#jump). 
 
 # 卡尔曼滤波器能干什么？
 
@@ -46,6 +50,8 @@ GPS能得到关于状态一些东西，但并不直接，并带有不确定和�
 
 如果用上所有这些手头上的信息，能比单独仅用GPS或仅凭预测得到更好的结果吗？答案是肯定的，这就是卡尔曼滤波器的用武之处. 
 
+
+<span id="jump">  </span>
 
 # 卡尔曼滤波器如何看你的问题
 

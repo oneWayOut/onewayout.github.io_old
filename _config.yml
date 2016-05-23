@@ -10,7 +10,7 @@ title: 唯有思想和行动能改变世界！
 email: cia120@163.com
 
 description: > # this means to ignore newlines until "baseurl:"
-  我喜欢开源软件，大自然，音乐等一切给我们自由和美丽的事物. 希望在此记录生活和学习点滴，分享一些真正有用的东西. 
+  我喜欢开源软件，大自然，音乐等一切给我们自由和美丽的事物. 希望在此记录生活和学习点滴，分享一些有用的东西. 
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://yourdomain.com" # the base hostname & protocol for your site
 
@@ -20,5 +20,3 @@ encoding: utf-8
 
 # Build settings
 markdown: kramdown
-
-encoding: utf-8
