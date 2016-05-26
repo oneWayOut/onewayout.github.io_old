@@ -20,15 +20,16 @@ Experience
 ----------
 
 **2009~2015** 
+
 * Embedded Software Development
 
 **2015~2016**
 
 * [Improve an ARINC653 simulator to control AR.Drone2](https://github.com/oneWayOut/ArDroneARINC653)
 
-* Create a control law for a new airframe in ISAE Supaero by using pixhawk platform.(Undertaking)
+* [Program for a new airframe in ISAE Supaero by using pixhawk platform](https://github.com/oneWayOut/Firmware/tree/caidev).(Undertaking)
 
-Interest
+Interests
 --------------------
 UAV， Open Source Software, Music …… Anything that gives us freedom and fun！
 

@@ -2,11 +2,11 @@
 layout: post
 title:  "How to customize Pixhawk in your own project"
 date:   2016-05-24 20:52:16 +0200
-categories: jekyll update
+categories: pixhawk
 ---
 
 >
-> In this article, I will explain the basic architecture of Pixhawk source code.
+> In this article, I explained the basic architecture of Pixhawk source code.
 > And then how to customize it in your own project.
 
 * [0. Prequisite](#0)
@@ -31,8 +31,13 @@ categories: jekyll update
 
   + [2.3 Change the mixer(To be continued...)](#2.3)
 
+  + [2.4 Change the makefile and the startup script](#2.4)
+
 * [3. Try this example](#3)
 
+  + [3.1 How to Try it](#3.1)
+
+  + [3.2 What I have changed](#3.2)
 
 <h2 id="0">0. Prequisite</h2>
 
@@ -40,7 +45,7 @@ It's recommended to use **Ubuntu 14.04 LTS**, otherwise you may have strange iss
 
 Please get familiar with GIT, it's a very powerfull software version control tool.　You can install the GUI tool `git cola` (In terminal: apt-get install git-cola) if you are not comfortable with the git commands in terminal.
 
-SublimeText3 is a convinient editor to navigate the numourous source files. There is already [a project file](https://github.com/PX4/Firmware/blob/master/Firmware.sublime-project) in the source folder that you can import to SublimeText. One feature that I used every day is that: Press "Ctrl + p" and type in the filename, and you can find the file you want quickly. 
+SublimeText3 is a convinient editor to navigate the numerous source files. There is already [a project file](https://github.com/PX4/Firmware/blob/master/Firmware.sublime-project) in the source folder that you can import to SublimeText. One feature that I used every day is that: Press "Ctrl + p" and type in the filename, and you can find the file you want quickly. 
 
 <h2 id="1">1. Understand Pixhawk source code</h2>
 
@@ -50,22 +55,11 @@ First you have to install the toolchain by following the steps in [this webpage]
 
 <h3 id="1.2">1.2 How are the source code directories organized </h3>
 
-After you have cloned the source code repository, you might be scared by so many directories and files. Actually you don't need to know all of them. I list the directory tree below(only the very import directories),　and explain what's in the folders.
+After you have cloned the source code repository, you might be scared by so many directories and files. Actually you don't need to know all of them. I list the directory tree below(only the very import directories),　and explain what are in the folders.
 
 {% highlight sh %}
 Firmware 
 ├── cmake  
-│   ├── cmake_hexagon 
-│   │   └── toolchain 
-│   ├── common 
-│   ├── configs 
-│   ├── nuttx 
-│   ├── posix 
-│   ├── qurt 
-│   ├── scripts 
-│   ├── templates 
-│   ├── test 
-│   └── toolchains 
 ├── msg 
 │   └── templates 
 │       ├── px4 
@@ -234,9 +228,9 @@ then
 ......
 {% endhighlight %}
 
-You can find the commands `uorb, mtd, param` in files: `uORBMain.cpp, mtd.c, param.c`. You don't need to go deep inside these files right now, anyway we may use this method to scrutinise other files later (For instance: flight control files). This piece of code will just start UORB to provide communication service, and load parameter file `mtd_params` which contains airframe configuration, PID parameters, etc. 
+You can find the commands `uorb, mtd, param` in files: `uORBMain.cpp, mtd.c, param.c`. You don't need to go deep inside these files right now, anyway we may use this method to scrutinise other files later (For instance: flight control files). This piece of code will just start uORB to provide communication service, and load parameter file `mtd_params` which contains airframe configuration, PID parameters, etc. 
 
-I assume you have read through this file. So to summarize, the startup scripts are very importand in the boot process. I list the things happened in this process to our concern:
+I assume you have read through this file. So to summarize, the startup scripts are very important in the boot process. I list the things happened in this process to our concern:
 
   * Read the parameter file
   * Start the sensor drivers (script `rc.sensors`)
@@ -250,10 +244,10 @@ All the flight control tasks run in Nuttx system. They communicate with each oth
 <center><img src="/assets/img/pixhawk/pixhawk_arch.png" alt="pixhawk_arch" /></center>
 
 <br>
-To control a vehichel, you need to navigate to waypoints, estimate the position and attitude, and control the position and attitude by using feedback control theory. That's the idea in pixhawk flight control architecture. 
+To control a vehicle, you need to navigate to waypoints, estimate the position and attitude, and control the position and attitude by using feedback control theory. That's the idea in pixhawk flight control architecture. 
 <center><img src="/assets/img/pixhawk/pixhawk_feedbackcontrol.png" alt="pixhawk_arch" /></center>  
 
-These flight control modules are in folder `Firmware/src/modules`. I list the  modules used by different airframes below. Actually you can find where them are launched in the startup scripts.
+These flight control modules are in folder `Firmware/src/modules`. I list the  modules used by different airframes below. Actually you can find where they are launched in the startup scripts.
  
 |---
 |   | Fixed Wing | Multi Copter | VTOL 
@@ -282,19 +276,66 @@ You can check the meaning of these messages in folder `Firmware/msg/templates`.
 
 <h3 id="2.1"> 2.1 A small tutorial </h3>
 
-We can do a small exercise to understand the code better, and then go even further. Please follow [this tutorial](http://dev.px4.io/tutorial-hello-sky.html#step-2-minimal-application). The FTDI 3.3v cable is **a necessary hardware** for developpers to interact with Nuttx through Nuttx console. 
+We can do a small exercise to understand the code better, and then go even further. Please follow [this tutorial](http://dev.px4.io/tutorial-hello-sky.html#step-2-minimal-application). The FTDI 3.3v cable is **a necessary hardware** for developpers to interact with Nuttx through **Nuttx Shell(NSH)**. 
 
 <h3 id="2.2"> 2.2 Add you own controller </h3>
 
-Following the same concept, you can change add a simple control law in [`Firmware/src/examples/fixedwing_control/main.c`](https://github.com/PX4/Firmware/tree/master/src/examples/fixedwing_control).  
+Following the same concept, you can add a simple control law in [`Firmware/src/examples/fixedwing_control/main.c`](https://github.com/PX4/Firmware/tree/master/src/examples/fixedwing_control). The program subscribes the estimated position and attitude, manual control input. The only thing you need to do is to implement the PID control law, and calculate the **normalized control value**. Then publish it in the `actuator_controls_0` message to mixer to control the servos or motors.
 
-<h3 id="2.3"> 2.3 Change the makefile </h3>
+<h3 id="2.3"> 2.3 Change the mixer(To be continued...) </h3>
 
-<h3 id="2.4"> 2.3 Change the mixer(To be continued...) </h3>
+If you have a special airframe, you may need to have you own mixer to control the acuators. Please refer to [this webpage](http://dev.px4.io/concept-mixing.html) and the source file folder `Firmware/ROMFS/mixers`.
+
+Actually the mixer is a bit complicated, I haven't understood it quite well. Maybe I will add more explainations here later.
+
+<h3 id="2.4"> 2.4 Change the makefile and the startup script</h3>
+
+You can add you own program in `Firmware/cmake/configs/nuttx_px4fmu-v2_default.cmake` as you did before in [section 2.1](#2.1), so as to complile it. But you still need to launch it in Nuttx shell. An alternative and simple way is to start it in startup script like below (Take fixed wing airframe for instance):
+{% highlight sh %}
+......
+#
+# Start attitude controller
+#
+# fw_att_control start
+# fw_pos_control_l1 start
+
+ex_fixedwing_control start
+......
+{% endhighlight %}
+This piece of code is from `rc.fw_apps`. As you can see, two lines are commented, one line is inserted. So your own controller `ex_fixedwing_control` from [section 2.2](#2.2) is started instead of the original one: `fw_att_control` and `fw_pos_control_l1`.
 
 <h2 id="3">3. Try this example </h2>
 
+I have modified some Pixhawk code for my internship project. So you can try my code and use the same method to customize pixhawk in your own project too.
 
+In my example, the `MAIN OUT` channel 1 and 2 can be controlled by the roll angle. And the `MAIN OUT` channel 3, 4, 5 and 6 are controlled by vertical speed.
 
+<h3 id="3.1">3.1 How to Try it</h3>
 
+In terminal, go to the folder where you want to store the source code, type in the following commands:
+{% highlight sh %}
+# clone the repository
+git clone https://github.com/oneWayOut/Firmware.git
+cd Firmware
+git checkout caidev
+git submodule update --init --recursive
 
+# please connect pixhawk to your computer through USB cable
+make px4fmu-v2_default upload
+{% endhighlight %}
+
+After you have execute the commands above, connect the servo and motor to the `MAIN OUT` channels. Connect a FTDI 3.3v cable to pixhawk as explained [here](http://dev.px4.io/advanced-system-console.html#connecting-via-ftdi-33v-cable). I assume you have installed `screen`. So you can connect to Nuttx shell by the command below(change `/dev/ttyXXX` to your own device name, something like `/dev/ttyUSB0`).
+{% highlight sh %}
+screen /dev/ttyXXX 57600 8N1
+{% endhighlight %}
+
+And start my customized task in Nuttx shell:
+{% highlight sh %}
+nsh> ex_fixedwing_control start
+{% endhighlight %}
+
+Now you can observe how the servo and motor react when you change the roll angle and the vertical speed of Pixhawk board.
+
+<h3 id="3.1">3.2 What I have changed </h3>
+
+As I said before, I changed the startup scripts, makefile and the simple controller example. You can see what I have changed [here](https://github.com/PX4/Firmware/compare/master...oneWayOut:caidev).
