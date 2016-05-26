@@ -204,3 +204,24 @@ pre {
         }
     }
 }
+
+
+/**
+ * cai defined table border style
+ */ 
+table{
+    border-collapse: collapse;
+    border-spacing: 0;
+    border:1px solid #ff0000;
+}
+
+th{
+    border:1px solid #808080;
+}
+
+td{
+    border:1px solid #808080;
+}
+
+
+
