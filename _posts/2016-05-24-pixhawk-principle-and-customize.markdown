@@ -2,7 +2,7 @@
 layout: post
 title:  "How to customize Pixhawk in your own project"
 date:   2016-05-24 20:52:16 +0200
-categories: myblog
+categories: jekyll update
 ---
 
 >
@@ -15,7 +15,7 @@ categories: myblog
 
   + [1.1 Install the toolchain and build the code](#1.1)
 
-  + [1.2 How are the source code directoris organized](#1.2)
+  + [1.2 How are the source code directories organized](#1.2)
 
   + [1.3 The boot process](#1.3)
 
@@ -38,9 +38,9 @@ categories: myblog
 
 It's recommended to use **Ubuntu 14.04 LTS**, otherwise you may have strange issues.
 
-Please get familiar with GIT, it's a very powerfull software version control tool.　You can install git cola (In terminal: apt-get install git-cola) if you are not comfortable with the git commands.
+Please get familiar with GIT, it's a very powerfull software version control tool.　You can install the GUI tool `git cola` (In terminal: apt-get install git-cola) if you are not comfortable with the git commands in terminal.
 
-SublimeText3 is a convinient editor to navigate the numourous source files. There is already [a project file](https://github.com/PX4/Firmware/blob/master/Firmware.sublime-project) in the source files that you can import to SublimeText. One feature that I used every day is that: Press "Ctrl + p" and type in the filename, and you can find the file you want quickly. 
+SublimeText3 is a convinient editor to navigate the numourous source files. There is already [a project file](https://github.com/PX4/Firmware/blob/master/Firmware.sublime-project) in the source folder that you can import to SublimeText. One feature that I used every day is that: Press "Ctrl + p" and type in the filename, and you can find the file you want quickly. 
 
 <h2 id="1">1. Understand Pixhawk source code</h2>
 
@@ -48,7 +48,7 @@ SublimeText3 is a convinient editor to navigate the numourous source files. Ther
 
 First you have to install the toolchain by following the steps in [this webpage](http://dev.px4.io/starting-installing-linux.html). And then you can build the code and flash it to your PX4 board as [this page](http://dev.px4.io/starting-building.html).
 
-<h3 id="1.2">1.2 How are the source code directoris organized </h3>
+<h3 id="1.2">1.2 How are the source code directories organized </h3>
 
 After you have cloned the source code repository, you might be scared by so many directories and files. Actually you don't need to know all of them. I list the directory tree below(only the very import directories),　and explain what's in the folders.
 
@@ -143,9 +143,9 @@ Firmware
 |---
 | Folder | Description 
 |-|:-
-| cmake | make file. we will change **nuttx_px4fmu-v2_default.cmake** later
-| msg | uORB msg template, the uORB msg headers are generated from this foler 
-| ROMFS | startup scrips and mixer files 
+| cmake | make files
+| msg | uORB msg template, the uORB msg headers are generated from this folder 
+| ROMFS | startup scripts and mixer files 
 |---
 | src | drivers, examples, flight control tasks
 | src/drivers | all the drivers: gps, gyro, pwm...
@@ -153,23 +153,22 @@ Firmware
 | src/modules | estimators, controllers ....
 | src/systemcmds | some handy commands can be used in Nuttx shell
 
-As you can see, the source code files are well organized. Nevertheless, you still need time to get familiar with them.
+As you can see, the source code files are well organized. Though you still need time to get familiar with them.
 
 <h3 id="1.3">1.3 The boot process</h3>
-If you power on your Pixhawk board through USB calbe or BEC, the LED will flash and the buzzer will play a special tune(you can check the tune meaning [here](http://ardupilot.org/copter/docs/common-sounds-pixhawkpx4.html)). But you may wander what exactly happen during this process. 
+If you power on your Pixhawk board through USB cable or BEC, the LED will flash and the buzzer will play a special tune(you can check the tune meaning [here](http://ardupilot.org/copter/docs/common-sounds-pixhawkpx4.html)). But you may wander what exactly happen during this process. 
 <center><img src="/assets/img/pixhawk/pixhawk_board.png" alt="pixhawk_board" width="219" height="337" /></center>
 
-When powering on the board, the bootloader will run first. Bootloader is like BIOS in your PC. And it's already in the board when you buy it. So you may never need to bother it. The bootloader will launch the Nuttx Operating System. After some initialization of the hardware, memory... the Nuttx will execute a script file called **"init.d/rcS"** in fuction `nsh_initscript()` of file `nsh_script.c`. You can check the script file folder in [section 1.2](#1.2)). This is a **very import** step. By executing this script file, some parameters in the EEPROM will be read, and the corresponding tasks related to these paraameters will be lanuched. I will explain this in the next section.
+When powering on the board, the bootloader will run first. Bootloader is like BIOS in your PC. And it's already in the board when you buy it. So you may never need to bother it. The bootloader will launch the Nuttx Operating System. After some initialization of the hardware, memory... the Nuttx will execute a script file called **"init.d/rcS"** in function `nsh_initscript()` of file `nsh_script.c`. You can check the script file folder in [section 1.2](#1.2)). This is a **very important** step. By executing this script file, some parameters in the EEPROM will be read, and the corresponding tasks related to these paraameters will be lanuched. I will explain this in the next section.
 
 <h3 id="1.4">1.4 The startup scripts</h3>
 
-Nuttx is like a simplified Linux, but it's real time. So the script file is quite the same as Bash script in Linux. You can easily understand it if you know linux well.
+Nuttx is like a simplified Linux, moreover it's real time. So the script file is quite the same as Bash script in Linux. You can easily understand it if you know linux well.
 
 Let's read some lines in `ROMFS/px4fmu_common/init.d/rcS` first.
 
 {% highlight sh %}
-...........
-..........
+......
 #
 # Try to mount the microSD card.
 #
@@ -195,22 +194,19 @@ else
 		set LOG_FILE /dev/null
 	fi
 fi
-.....
-.....
+......
 {% endhighlight %}
 
-At first it will start serial driver and set some parameters, which is not interested by us and not listed here. Then you will see `if mount -t vfat /dev/mmcsd0 /fs/microsd`. `mount` is a built in command suportted by Nuttx (Linux has the same command). It will try to mount the microSD card. If the return value is true, which means microSD card is mounted successfully,  the `echo` will prompt the result. And you should heard the buzzer alarm by `tone_alarm start`.
+At first it will start serial driver and set some parameters, which is not interested by us and not listed here. Then you will see `if mount -t vfat /dev/mmcsd0 /fs/microsd`. `mount` is a built-in command supported by Nuttx (Linux has the same command). It will try to mount the microSD card. If the return value is true, which means microSD card is mounted successfully,  the `echo` will print the result in shell window. And you should heard the buzzer alarm by `tone_alarm start`.
 
-There are many similar statments like `tone_alarm start`. If you understand this, you will almost know how the script file works and how to modify it to satisfy your own needs. Well, the grammar is simple: `command -arguments`, just like the commands in Linux Terminal. `tone_alrm` is a command compiled from file `tone_alarm.cpp` by some tricks in makefile. If you scrutinise the function `tone_alarm_main()` in this file, you will find this command has arguments `start` and `stop`.
+There are many similar statements like `tone_alarm start`. If you understand this, you will almost know how the script file works and how to modify it to satisfy your own needs. Well, the grammar is simple: `command -arguments`, just like the commands in Linux Terminal. `tone_alrm` is a command compiled from file `tone_alarm.cpp` by some tricks in makefile. If you scrutinise the function `tone_alarm_main()` in this file, you will find this command has arguments `start` and `stop`.
 
-Let's read another piece of code in this file.
+Let's read another piece of code in this file to see if you have any clue.
 
 {% highlight sh %}
-...........
-..........
+......
 if [ $MODE == autostart ]
 then
-
 	#
 	# Start the ORB (first app to start)
 	#
@@ -235,27 +231,69 @@ then
 		then
 		fi
 	fi
-.....
-.....
+......
 {% endhighlight %}
 
-You can find the commands `uorb, mtd, param` in files: `uORBMain.cpp, mtd.c, param.c`. You don't need to go deep inside these files. This piece of code will just start UORB to provide communication service, and load parameter file `mtd_params` which contains airframe configuration, PID parameters, etc. 
+You can find the commands `uorb, mtd, param` in files: `uORBMain.cpp, mtd.c, param.c`. You don't need to go deep inside these files right now, anyway we may use this method to scrutinise other files later (For instance: flight control files). This piece of code will just start UORB to provide communication service, and load parameter file `mtd_params` which contains airframe configuration, PID parameters, etc. 
 
+I assume you have read through this file. So to summarize, the startup scripts are very importand in the boot process. I list the things happened in this process to our concern:
 
+  * Read the parameter file
+  * Start the sensor drivers (script `rc.sensors`)
+  * Set and load the mixer corresponding to the airframe parameter `SYS_AUTOSTART`, set the pwm channel (script `rc.autostart`, this file is generated after you build the code) 
+  * Start the flight tasks corresponding to the airframe parameter `SYS_AUTOSTART` (script `rc.fw_apps`, `rc.mc_apps`, etc.)
 
+<h3 id="1.5">1.5 The architecture</h3>
 
+All the flight control tasks run in Nuttx system. They communicate with each other through uORB. uORB is a implementation of publish-subscribe pattern.
 
-<h3 id="1.1">1.3强调</h3>
+<center><img src="/assets/img/pixhawk/pixhawk_arch.png" alt="pixhawk_arch" /></center>
 
-这是第一段第三节
+<br>
+To control a vehichel, you need to navigate to waypoints, estimate the position and attitude, and control the position and attitude by using feedback control theory. That's the idea in pixhawk flight control architecture. 
+<center><img src="/assets/img/pixhawk/pixhawk_feedbackcontrol.png" alt="pixhawk_arch" /></center>  
 
-这是第一段第三节
+These flight control modules are in folder `Firmware/src/modules`. I list the  modules used by different airframes below. Actually you can find where them are launched in the startup scripts.
+ 
+|---
+|   | Fixed Wing | Multi Copter | VTOL 
+|-|:-|:-|:-
+| Navigator | navigator | navigator | navigator
+| Estimator | ekf_att_pos_estimator | attitude_estimator_q <br> position_estimator_inav | attitude_estimator_q <br> position_estimator_inav
+| Controller | fw_att_control <br> fw_pow_control_l1 | mc_att_control <br> mc_pos_control | vtol_att_control <br> mc_att_control <br> mc_pos_control <br> fw_att_control <br> fw_pow_control_l1 
 
-这是第一段第三节
+<br>
+The architectural overview could be seen [here](http://dev.px4.io/concept-architecture.html). The tasks communicate by publishing and subscribing uORB messages. For instance, the messages related to the module `attitude_estimator_q` are as follows:
 
-这是第一段第三节
+* Published messages:
+    - vehicle_attitude
+    - control_state
+* Subscribed messages:
+    - sensor_combined 
+    - vision_position_estimate 
+    - att_pos_mocap 
+    - airspeed 
+    - parameter_update 
+    - vehicle_global_position
 
-这是第一段第三节
+You can check the meaning of these messages in folder `Firmware/msg/templates`.
+
+<h2 id="2">2. How to costumize</h2>
+
+<h3 id="2.1"> 2.1 A small tutorial </h3>
+
+We can do a small exercise to understand the code better, and then go even further. Please follow [this tutorial](http://dev.px4.io/tutorial-hello-sky.html#step-2-minimal-application). The FTDI 3.3v cable is **a necessary hardware** for developpers to interact with Nuttx through Nuttx console. 
+
+<h3 id="2.2"> 2.2 Add you own controller </h3>
+
+Following the same concept, you can change add a simple control law in [`Firmware/src/examples/fixedwing_control/main.c`](https://github.com/PX4/Firmware/tree/master/src/examples/fixedwing_control).  
+
+<h3 id="2.3"> 2.3 Change the makefile </h3>
+
+<h3 id="2.4"> 2.3 Change the mixer(To be continued...) </h3>
+
+<h2 id="3">3. Try this example </h2>
+
 
 
 
