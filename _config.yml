@@ -8,6 +8,7 @@
 # Site settings
 title: oneWayOut's blog
 email: cia120@163.com
+favicon: /assets/img/avatar.jpg
 
 description: > # this means to ignore newlines until "baseurl:"
   我喜欢开源软件，大自然，音乐等一切给我们自由和美丽的事物. 希望在此记录生活和学习点滴，分享一些有用的东西. 

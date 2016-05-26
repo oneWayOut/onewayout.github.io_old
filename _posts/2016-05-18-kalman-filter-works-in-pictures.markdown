@@ -4,6 +4,16 @@ title:  "图示卡尔曼滤波器原理(译文)"
 date:   2016-05-18 22:38:16 +0200
 categories: jekyll update
 ---
+ 
+   <script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+  </script>
 
 >
 > 最近需要用到卡尔曼滤波器，看了一些文章，发现这篇[ How a Kalman filter works, in pictures](http://www.bzarg.com/p/how-a-kalman-filter-works-in-pictures)最为深入浅出，通俗易懂，翻译出来供朋友们参考。
