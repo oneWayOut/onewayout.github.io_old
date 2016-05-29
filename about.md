@@ -9,11 +9,13 @@ title: About
 Education
 ---------
 
-2015-2016  
-:   **Advanced Master, Embedded Systems**; ISAE Supaero       
+**2015~2016**
+
+* **Advanced Master, Embedded Systems**; ISAE Supaero, Toulouse, France
 	  	 
-2007-2009
-:   **硕士, 机械设计**; 武汉大学
+**2007~2009**
+
+*   **硕士, 机械设计**; 武汉大学
 
 
 Experience

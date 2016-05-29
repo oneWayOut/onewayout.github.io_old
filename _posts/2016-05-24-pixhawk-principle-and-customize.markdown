@@ -6,8 +6,8 @@ categories: pixhawk
 ---
 
 >
-> In this article, I explained the basic architecture of Pixhawk source code.
-> And then how to customize it in your own project.
+> Pixhawk is an open-source autopilot platform. In this article, I explained the basic architecture of Pixhawk source code.
+> And how to customize it in your own project.
 
 * [0. Prequisite](#0)
 
@@ -25,11 +25,11 @@ categories: pixhawk
 
 * [2. How to costumize](#2)
 
-  + [2.1 Add you own controller](#2.1)
+  + [2.1 A small tutorial](#2.1)
 
-  + [2.2 Change the makefile](#2.2)
+  + [2.2 Add you own controller](#2.2)
 
-  + [2.3 Change the mixer(To be continued...)](#2.3)
+  + [2.3 Change the mixer](#2.3)
 
   + [2.4 Change the makefile and the startup script](#2.4)
 
@@ -45,7 +45,7 @@ It's recommended to use **Ubuntu 14.04 LTS**, otherwise you may have strange iss
 
 Please get familiar with GIT, it's a very powerfull software version control tool.　You can install the GUI tool `git cola` (In terminal: apt-get install git-cola) if you are not comfortable with the git commands in terminal.
 
-SublimeText3 is a convinient editor to navigate the numerous source files. There is already [a project file](https://github.com/PX4/Firmware/blob/master/Firmware.sublime-project) in the source folder that you can import to SublimeText. One feature that I used every day is that: Press "Ctrl + p" and type in the filename, and you can find the file you want quickly. 
+SublimeText 3 is a convinient editor to navigate the numerous source files. There is already [a project file](https://github.com/PX4/Firmware/blob/master/Firmware.sublime-project) in the source folder that you can import to SublimeText. One feature that I used every day is that: Press "Ctrl + p" and type in the filename, and you can find the file you want instantly. 
 
 <h2 id="1">1. Understand Pixhawk source code</h2>
 
@@ -191,7 +191,7 @@ fi
 ......
 {% endhighlight %}
 
-At first it will start serial driver and set some parameters, which is not interested by us and not listed here. Then you will see `if mount -t vfat /dev/mmcsd0 /fs/microsd`. `mount` is a built-in command supported by Nuttx (Linux has the same command). It will try to mount the microSD card. If the return value is true, which means microSD card is mounted successfully,  the `echo` will print the result in shell window. And you should heard the buzzer alarm by `tone_alarm start`.
+At first it will start serial driver and set some parameters, which is not interested by us and not listed here. Then you will see `if mount -t vfat /dev/mmcsd0 /fs/microsd`. `mount` is a built-in command supported by Nuttx (Linux has the same command). It will try to mount the microSD card. If the return value is true, which means microSD card is mounted successfully,  the `echo` will print the result in shell window. And you should hear the buzzer alarm by `tone_alarm start`.
 
 There are many similar statements like `tone_alarm start`. If you understand this, you will almost know how the script file works and how to modify it to satisfy your own needs. Well, the grammar is simple: `command -arguments`, just like the commands in Linux Terminal. `tone_alrm` is a command compiled from file `tone_alarm.cpp` by some tricks in makefile. If you scrutinise the function `tone_alarm_main()` in this file, you will find this command has arguments `start` and `stop`.
 
@@ -282,11 +282,9 @@ We can do a small exercise to understand the code better, and then go even furth
 
 Following the same concept, you can add a simple control law in [`Firmware/src/examples/fixedwing_control/main.c`](https://github.com/PX4/Firmware/tree/master/src/examples/fixedwing_control). The program subscribes the estimated position and attitude, manual control input. The only thing you need to do is to implement the PID control law, and calculate the **normalized control value**. Then publish it in the `actuator_controls_0` message to mixer to control the servos or motors.
 
-<h3 id="2.3"> 2.3 Change the mixer(To be continued...) </h3>
+<h3 id="2.3"> 2.3 Change the mixer </h3>
 
-If you have a special airframe, you may need to have you own mixer to control the acuators. Please refer to [this webpage](http://dev.px4.io/concept-mixing.html) and the source file folder `Firmware/ROMFS/mixers`.
-
-Actually the mixer is a bit complicated, I haven't understood it quite well. Maybe I will add more explainations here later.
+The key concept of the mixer is to translate the normalized control output from the controller to pwm to actuators, Which greatly improves reusability of code. If you have a special airframe, you may need to have you own mixer to control the acuators. Please refer to [this webpage](http://dev.px4.io/concept-mixing.html) and the source file folder `Firmware/ROMFS/mixers`.
 
 <h3 id="2.4"> 2.4 Change the makefile and the startup script</h3>
 
@@ -331,11 +329,11 @@ screen /dev/ttyXXX 57600 8N1
 
 And start my customized task in Nuttx shell:
 {% highlight sh %}
-nsh> ex_fixedwing_control start
+nsh> ex_visionair_control start
 {% endhighlight %}
 
-Now you can observe how the servo and motor react when you change the roll angle and the vertical speed of Pixhawk board.
+Press the safety button to arm the board, now you can observe how the servo and motor react when you change the roll angle and the vertical speed of Pixhawk board. 
 
-<h3 id="3.1">3.2 What I have changed </h3>
+<h3 id="3.2">3.2 What I have changed </h3>
 
-As I said before, I changed the startup scripts, makefile and the simple controller example. You can see what I have changed [here](https://github.com/PX4/Firmware/compare/master...oneWayOut:caidev).
+As I said before, I changed the startup scripts, makefile. And I renamed the folder `fixedwing_control` to `visionair_control`. In the file `main.c` from this folder, I connect the sensor value  directy to pwm channel, but not using mixer.  You can see what I have changed [here](https://github.com/PX4/Firmware/compare/master...oneWayOut:caidev).
