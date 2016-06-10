@@ -9,7 +9,7 @@ categories: pixhawk
 > Pixhawk is an open-source autopilot platform. In this article, I explained the basic architecture of Pixhawk source code.
 > And how to customize it in your own project.
 
-* [0. Prequisite](#0)
+* [0. Prerequisite](#0)
 
 * [1. Understand Pixhawk source code](#1)
 
@@ -39,13 +39,13 @@ categories: pixhawk
 
   + [3.2 What I have changed](#3.2)
 
-<h2 id="0">0. Prequisite</h2>
+<h2 id="0">0. Prerequisite</h2>
 
 It's recommended to use **Ubuntu 14.04 LTS**, otherwise you may have strange issues.
 
 Please get familiar with GIT, it's a very powerfull software version control tool.　You can install the GUI tool `git cola` (In terminal: apt-get install git-cola) if you are not comfortable with the git commands in terminal.
 
-SublimeText 3 is a convinient editor to navigate the numerous source files. There is already [a project file](https://github.com/PX4/Firmware/blob/master/Firmware.sublime-project) in the source folder that you can import to SublimeText. One feature that I used every day is that: Press "Ctrl + p" and type in the filename, and you can find the file you want instantly. 
+SublimeText 3 is a convenient editor to navigate the numerous source files. There is already [a project file](https://github.com/PX4/Firmware/blob/master/Firmware.sublime-project) in the source folder that you can import to SublimeText. One feature that I used every day is that: Press "Ctrl + p" and type in the filename, and you can find the file you want instantly. 
 
 <h2 id="1">1. Understand Pixhawk source code</h2>
 
@@ -53,7 +53,7 @@ SublimeText 3 is a convinient editor to navigate the numerous source files. Ther
 
 First you have to install the toolchain by following the steps in [this webpage](http://dev.px4.io/starting-installing-linux.html). And then you can build the code and flash it to your PX4 board as [this page](http://dev.px4.io/starting-building.html).
 
-<h3 id="1.2">1.2 How are the source code directories organized </h3>
+<h3 id="1.2">1.2 How are the source code directories organised </h3>
 
 After you have cloned the source code repository, you might be scared by so many directories and files. Actually you don't need to know all of them. I list the directory tree below(only the very import directories),　and explain what are in the folders.
 
@@ -147,13 +147,13 @@ Firmware
 | src/modules | estimators, controllers ....
 | src/systemcmds | some handy commands can be used in Nuttx shell
 
-As you can see, the source code files are well organized. Though you still need time to get familiar with them.
+As you can see, the source code files are well organised. Though you still need time to get familiar with them.
 
 <h3 id="1.3">1.3 The boot process</h3>
 If you power on your Pixhawk board through USB cable or BEC, the LED will flash and the buzzer will play a special tune(you can check the tune meaning [here](http://ardupilot.org/copter/docs/common-sounds-pixhawkpx4.html)). But you may wander what exactly happen during this process. 
 <center><img src="/assets/img/pixhawk/pixhawk_board.png" alt="pixhawk_board" width="219" height="337" /></center>
 
-When powering on the board, the bootloader will run first. Bootloader is like BIOS in your PC. And it's already in the board when you buy it. So you may never need to bother it. The bootloader will launch the Nuttx Operating System. After some initialization of the hardware, memory... the Nuttx will execute a script file called **"init.d/rcS"** in function `nsh_initscript()` of file `nsh_script.c`. You can check the script file folder in [section 1.2](#1.2)). This is a **very important** step. By executing this script file, some parameters in the EEPROM will be read, and the corresponding tasks related to these paraameters will be lanuched. I will explain this in the next section.
+When powering on the board, the bootloader will run first. Bootloader is like BIOS in your PC. And it's already in the board when you buy it. So you may never need to bother it. The bootloader will launch the Nuttx Operating System. After some initialization of the hardware, memory... the Nuttx will execute a script file called **"init.d/rcS"** in function `nsh_initscript()` of file `nsh_script.c`. You can check the script file folder in [section 1.2](#1.2)). This is a **very important** step. By executing this script file, some parameters in the EEPROM will be read, and the corresponding tasks related to these parameters will be launched. I will explain this in the next section.
 
 <h3 id="1.4">1.4 The startup scripts</h3>
 
@@ -288,7 +288,7 @@ The key concept of the mixer is to translate the normalized control output from 
 
 <h3 id="2.4"> 2.4 Change the makefile and the startup script</h3>
 
-You can add you own program in `Firmware/cmake/configs/nuttx_px4fmu-v2_default.cmake` as you did before in [section 2.1](#2.1), so as to complile it. But you still need to launch it in Nuttx shell. An alternative and simple way is to start it in startup script like below (Take fixed wing airframe for instance):
+You can add you own program in `Firmware/cmake/configs/nuttx_px4fmu-v2_default.cmake` as you did before in [section 2.1](#2.1), so as to compile it. But you still need to launch it in Nuttx shell. An alternative and simple way is to start it in startup script like below (Take fixed wing airframe for instance):
 {% highlight sh %}
 ......
 #
@@ -336,4 +336,4 @@ Press the safety button to arm the board, now you can observe how the servo and 
 
 <h3 id="3.2">3.2 What I have changed </h3>
 
-As I said before, I changed the startup scripts, makefile. And I renamed the folder `fixedwing_control` to `visionair_control`. In the file `main.c` from this folder, I connect the sensor value  directy to pwm channel, but not using mixer.  You can see what I have changed [here](https://github.com/PX4/Firmware/compare/master...oneWayOut:caidev).
+As I said before, I changed the startup scripts, makefile. And I renamed the folder `fixedwing_control` to `visionair_control`. In the file `main.c` from this folder, I connect the sensor value  directly to pwm channel, but not using mixer.  You can see what I have changed [here](https://github.com/PX4/Firmware/compare/master...oneWayOut:caidev).
