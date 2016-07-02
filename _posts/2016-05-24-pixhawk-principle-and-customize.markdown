@@ -5,7 +5,7 @@ date:   2016-05-24 20:52:16 +0200
 categories: pixhawk
 ---
 
->
+> 本文是在ISAE Supaero实习时，应老师要求所写。本来老师要求我对Pixhawk的理解写成文档或PPT,　因刚好在折腾博客，就放在这里了。
 > Pixhawk is an open-source autopilot platform. In this article, I explained the basic architecture of Pixhawk source code.
 > And how to customize it in your own project.
 
