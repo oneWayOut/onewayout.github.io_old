@@ -45,6 +45,10 @@ categories: essay
 
   + [2.2 Pixhawk姿态控制代码解析](#2.2)
 
+    * [2.2.1 角度误差控制](#2.2.1)
+
+    * [2.2.2 角速率误差控制](#2.2.2)
+
 
 
 <h2 id="1">1. 前置知识</h2>
@@ -141,7 +145,7 @@ $$\begin{equation}\mathbf{R_B^G} =
 旋转矩阵为正交单位阵，其逆矩阵为其转置矩阵:　$$\mathbf{R^{T}}=\mathbf{R^{-1}}$$. 利用这一性质可在计算机内快速求其逆.    
 请务必记清旋转矩阵的含义及其性质, 且不要将两坐标系的转换顺序弄反. 
 
-下节讲阐述如何根据各种旋转表示方法计算此矩阵. 
+下节将阐述如何根据各种旋转表示方法计算此矩阵. 
 
 本节参考资料：  
 [http://mathworld.wolfram.com/RotationMatrix.html](http://mathworld.wolfram.com/RotationMatrix.html)  
@@ -209,7 +213,7 @@ u_x \\ u_y \\ u_z
 \end{pmatrix}\sin\frac\Theta2
 $$
 
-[维基百科中对四元数](https://zh.wikipedia.org/wiki/四元数与空间旋转)表示旋转的推导比较简明，在此不在赘述. 
+[维基百科中对四元数](https://zh.wikipedia.org/wiki/四元数与空间旋转)表示旋转的推导比较简明，在此不再赘述. 
 
 <!--$$q=e^{\frac\Theta2(u_xi+u_yj+u_zk)}=\cos\frac\Theta2+(u_xi+u_yj+u_zk)\sin\frac\Theta2$$-->
 

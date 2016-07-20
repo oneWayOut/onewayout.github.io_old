@@ -24,7 +24,7 @@ categories: jekyll update
 
 令人吃惊的是貌似很少有软件工程师和科学家知道它，这让我有点伤感，因为这是一个如此通用和强大的**信息融合**工具，特别是出现不确定因素时. 其提取精确信息的能力曾一度看起来有些不可思议. 如果说我有些夸大其词，请看[我之前发的一个视频](http://www.bzarg.com/p/improving-imu-attitude-estimates-with-velocity-data)，这个视频中我演示了卡尔曼滤波器根据一个自由浮动的物体的*速度*得出其*方位*. 非常巧妙. 
 
-# 卡尔曼滤波器是什么?
+# 什么是卡尔曼滤波器?
 
 卡尔曼滤波器对于含**不确定信息**的动态系统都可适用，你可以对系统下一步的行为做一个**有根据的猜测**. 哪怕实际情况与你的猜测相去甚远，卡尔曼滤波器通常也能计算出实际发生了什么. 并且它能有效利用你可能不会想到的各种极端现象之间的联系. 
 
@@ -365,6 +365,6 @@ $$\color{royalblue}{\mathbf{\hat{x}}_k’}$$是新的最佳估计，我们可以
 
 以上所有数学公式中，你仅需实现式$$\eqref{kalpredictfull}, \eqref{kalupdatefull}$$, 及 $$\eqref{kalgainfull}$$.（或者直接从$$\eqref{covident}$$, $$\eqref{matrixupdate}$$式推导）
 
-通过这些公式，你可准确地对任何线性系统建模，对于非线性系统，通过对预测及测量的平均值作简单的线性化处理，可使用**扩展卡尔曼滤波器(Extended　Kalman Filter)**. 
+通过这些公式，你可准确地对任何线性系统建模，对于非线性系统，通过对预测及测量的平均值作简单的线性化处理，可使用**扩展卡尔曼滤波器(Extended Kalman Filter)**. 
 
 本文参考了[这篇好文](http://www.cl.cam.ac.uk/~rmf25/papers/Understanding%20the%20Basis%20of%20the%20Kalman%20Filter.pdf)，有探索精神的朋友可在此文中看到更深入的推导. 
