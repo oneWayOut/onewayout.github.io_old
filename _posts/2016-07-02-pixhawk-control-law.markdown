@@ -20,7 +20,7 @@ categories: essay
 网上有些关于Pixhawk姿态控制的文章, 写的都不是很透彻清晰. 最近在研究Pixhawk多旋翼飞控，现已基本明白其姿态控制原理, 在本文中力图简明地阐述我的理解. 
 
 
-我在之前的[这篇文章](http://onewayout.github.io/pixhawk/2016/05/24/pixhawk-principle-and-customize.html#1.5)已对Pixhawk总体架构做了一个概括. 理解了代码架构、控制率，想要利用pixhawk强大的软硬件平台来扩展做自己想要的东西就相当简单了. 大部分个性化的定制应该在控制率、仿真上面. 比如我们新设计了一个异型翼面，控制通道与现有飞机不同的飞机，仅需要在原有控制率上修改或新实现自己的控制率，并更改相关启动脚本及mixer文件就可以了. 而姿态估计、位置估计等模块可不做任何更改完全复用，这也是Pixhawk中通过消息发布订阅模式来实现模块间通信带来的好处. 
+我在之前的[这篇文章](http://onewayout.github.io/pixhawk/2016/05/24/pixhawk-principle-and-customize.html#1.5)已对Pixhawk总体架构做了一个概括. 理解了代码架构、控制率，想要利用pixhawk强大的软硬件平台来扩展做自己想要的东西就相当简单了. 大部分个性化的定制应该在控制率、仿真上面. 比如我们新设计了一个异型翼面，控制通道与现有飞机不同的飞机，仅需要在原有控制率上修改或新实现自己的控制率，并更改相关启动脚本及mixer文件就可以了. 而姿态估计、位置估计等模块可不做任何更改完全复用，这也是Pixhawk中通过消息发布/订阅模式来实现模块间通信，从而达到高度模块化的软件架构带来的好处. 
 
 
 * [1. 前置知识](#1)
@@ -67,7 +67,7 @@ categories: essay
 * 第一种表示意义：旋转向量
 <center><img src="/assets/img/pixhawk_control_law/01RotationMatrix_1000.gif" alt = "RotationMatrix" /></center>
 
-平面上的每一点 $${\displaystyle P}$$都有一个坐标 $${\displaystyle P(x,y)}$$，并对应着一个向量$${\displaystyle (x,y)}$$. 所有普通意义上的平面向量组成了一个空间，记作ℝ²，因为每个向量都可以表示为两个实数构成的有序数组$${\displaystyle (x,y)}$$. 在向量空间ℝ²，将固定坐标系内的给定向量$$\mathbf{v_0}$$绕逆时针旋转$$\theta$$至$$\mathbf{v’}$$, 可表示如下：
+平面上的每一点 $${\displaystyle P}$$都有一个坐标 $${\displaystyle P(x,y)}$$，并对应着一个向量$${\displaystyle (x,y)}$$. 所有普通意义上的平面向量组成了一个空间，记作ℝ²，因为每个向量都可以表示为两个实数构成的有序数组$${\displaystyle (x,y)}$$. 在向量空间ℝ²，将固定坐标系内的给定向量$$\mathbf{v_0}$$(本例中为$$(1,0)^T$$)绕逆时针旋转$$\theta$$至$$\mathbf{v’}$$(本例中为$$(\cos\theta, \sin\theta)^T$$), 可表示如下：
 
 $$\mathbf{v’} = \mathbf{R_\theta}\mathbf{v_0}$$
 
@@ -91,12 +91,12 @@ $$-->
 
 * **第二种表示意义：旋转坐标系**
 
-本文着重讨论此种惯例表示，因为在飞机姿态控制中经常会在大地坐标系(惯性系)，以及机体坐标系(非惯性系)之间切换, 理解此种表示法的意义非常重要. 
+本文着重讨论此种惯例表示，因为在飞机姿态控制中会用到多个坐标系:大地坐标系(惯性系)，机体坐标系(非惯性系)...等, 我们需要知道同一向量(速度, 加速度,角速度等)在这些坐标系之间的转换关系, 理解此种表示法的意义非常重要. 
 
 仍从最简单的二维旋转开始，如下图所示：
 <center><img src="/assets/img/pixhawk_control_law/02RotationMatrixAxes_1000.gif" alt = "RotationMatrixAxes" /></center>
 
-旋转矩阵可以表示不同坐标系下同一向量的坐标之间的关系. 以$$\mathbf{v_0}$$及$$\mathbf{v’}$$分别表示向量**V**在坐标系OXY及OX'Y'中的坐标，则有:
+旋转矩阵可以表示不同坐标系下同一向量的坐标之间的关系. 以上图为例: $$\mathbf{v_0}=(1,0)^T$$及$$\mathbf{v’}=(\cos\theta, -\sin\theta)^T$$分别是向量**V**在坐标系OX<sub>0</sub>Y<sub>0</sub>及OX'Y'中的向量坐标，则有:
 
 $$\mathbf{v_0} = \mathbf{R_\theta}\mathbf{v'}$$
 
@@ -176,7 +176,7 @@ Randal W. Beard & Timothy W. McLain _Small Unmanned Aircraft: Theory and Practic
 * 绕oy′旋转$$\theta$$;
 * 绕ox″(即oX)旋转$$\phi$$.
 
-$$\psi$$，$$\theta$$，$$\phi$$即分别为偏航，滚转，俯仰角(yaw, roll, pitch). 
+$$\psi$$，$$\theta$$，$$\phi$$即分别为偏航，俯仰，滚转角(yaw, pitch, roll). 
 
 若从机体旋转到大地坐标系，则为相反的顺序和负的旋转方向. 
 
@@ -453,6 +453,6 @@ MulticopterAttitudeControl::control_attitude(float dt)
 
 
 <h4 id="2.2.2">2.2.2 角速率误差控制</h4>
-上节中我们已经得到目标角速率, 当前角速率可由姿态估计模块给出, 此环节的输入即为此两角速率. 输出为各姿态轴控制命令. 对照代码容易看出其控制框图如下, 此处不再列出源代码:
+上节中我们已经得到目标角速率, 当前角速率可由姿态估计模块给出, 角速率误差控制环节的输入即为此两角速率. 输出为各姿态轴控制命令. 对照代码容易看出其控制框图如下, 此处不再列出源代码:
 <center><img src="/assets/img/pixhawk_control_law/2.3control_rates.png" alt = "control_rates" /></center>
 此处需要注意除了<span style="color: Green;">前馈环节</span>以外, 图中<span style="color: Red;">PI控制器</span>以及<span style="color: Blue;">微分环节</span>并不是典型的PID控制器, 因为<span style="color: Blue;">此微分环节</span>的输入为当前角速率, 而非角速率误差. 可如此理解<span style="color: Blue;">此微分环节</span>的作用, 若当前角加速度过大, 应加以控制使其减小, 即对当前角速率进行微分负反馈. 
