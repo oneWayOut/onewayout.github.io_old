@@ -1,5 +1,7 @@
-# oneWayOut's blog
+# My website
 
-使用Jekyll和Github搭建的个人博客.　　　
+使用Jekyll和Github搭建的个人网站. 
 
-网址：[onewayout.github.io](http://onewayout.github.io/)
+分别通过rouge及MathJax支持代码高亮和数学公式显示.
+
+网址：[nutshellking.com](http://nutshellking.com), [onewayout.github.io](http://onewayout.github.io/)
